@@ -304,7 +304,7 @@ class DefaultAnimationPreprocessor: BasePreprocessor {
                                            .beginWith(modifiers: shadowState),
                                            .timingFunction(.deceleration)])
       context[fromView]!.append(contentsOf: [.translate(shift(direction: direction, appearing: false) / 3),
-                                             .overlay(color: .black, opacity: 0.1),
+//                                             .overlay(color: .black, opacity: 0.1), // BestPartners: Modify By BestPartners
                                              .timingFunction(.deceleration)])
     case .pull(let direction):
       context.insertToViewFirst = true
@@ -312,7 +312,8 @@ class DefaultAnimationPreprocessor: BasePreprocessor {
                                              .shadowOpacity(0),
                                              .beginWith(modifiers: shadowState)])
       context[toView]!.append(contentsOf: [.translate(shift(direction: direction, appearing: true) / 3),
-                                           .overlay(color: .black, opacity: 0.1)])
+//                                           .overlay(color: .black, opacity: 0.1), // BestPartners: Modify By BestPartners
+                                           .useNoSnapshot])
     case .slide(let direction):
       context[fromView]!.append(contentsOf: [.translate(shift(direction: direction, appearing: false))])
       context[toView]!.append(contentsOf: [.translate(shift(direction: direction, appearing: true))])

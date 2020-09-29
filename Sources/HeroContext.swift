@@ -141,16 +141,16 @@ extension HeroContext {
     // capture a snapshot without alpha, cornerRadius, or shadows
     let oldCornerRadius = view.layer.cornerRadius
     let oldAlpha = view.alpha
-		let oldShadowRadius = view.layer.shadowRadius
-		let oldShadowOffset = view.layer.shadowOffset
-		let oldShadowPath = view.layer.shadowPath
-		let oldShadowOpacity = view.layer.shadowOpacity
+    let oldShadowRadius = view.layer.shadowRadius
+    let oldShadowOffset = view.layer.shadowOffset
+    let oldShadowPath = view.layer.shadowPath
+    let oldShadowOpacity = view.layer.shadowOpacity
     view.layer.cornerRadius = 0
     view.alpha = 1
-		view.layer.shadowRadius = 0.0
-		view.layer.shadowOffset = .zero
-		view.layer.shadowPath = nil
-		view.layer.shadowOpacity = 0.0
+    view.layer.shadowRadius = 0.0
+    view.layer.shadowOffset = .zero
+    view.layer.shadowPath = nil
+    view.layer.shadowOpacity = 0.0
 
     let snapshot: UIView
     let snapshotType: HeroSnapshotType = self[view]?.snapshotType ?? .optimized
@@ -206,6 +206,21 @@ extension HeroContext {
         } else if let effectView = view as? UIVisualEffectView {
           snapshot = UIVisualEffectView(effect: effectView.effect)
           snapshot.frame = effectView.bounds
+        } // BestPartners: Modify By BestPartners，新增一个判断，用于将Texture图片组件融入Hero过渡动画
+        else if view.classForCoder.description() == "_ASDisplayView",
+            let animationImageView = view.value(forKey: "asyncdisplaykit_node") as? HeroCustomImageViewProtocal,
+            animationImageView.heroCustomImageViewEnabled {
+            let contentView = UIImageView(image: animationImageView.heroCustomImageViewImage)
+            contentView.contentMode = animationImageView.heroCustomImageViewContentMode
+            contentView.tintColor = animationImageView.heroCustomImageViewTintColor
+            contentView.frame = view.bounds
+            contentView.backgroundColor = view.backgroundColor
+            contentView.layer.magnificationFilter = view.layer.magnificationFilter
+            contentView.layer.minificationFilter = view.layer.minificationFilter
+            contentView.layer.minificationFilterBias = view.layer.minificationFilterBias
+            let snapShotView = UIView()
+            snapShotView.addSubview(contentView)
+            snapshot = snapShotView
         } else {
           snapshot = view.snapshotView() ?? UIView()
         }
@@ -220,10 +235,10 @@ extension HeroContext {
 
     view.layer.cornerRadius = oldCornerRadius
     view.alpha = oldAlpha
-		view.layer.shadowRadius = oldShadowRadius
-		view.layer.shadowOffset = oldShadowOffset
-		view.layer.shadowPath = oldShadowPath
-		view.layer.shadowOpacity = oldShadowOpacity
+    view.layer.shadowRadius = oldShadowRadius
+    view.layer.shadowOffset = oldShadowOffset
+    view.layer.shadowPath = oldShadowPath
+    view.layer.shadowOpacity = oldShadowOpacity
 
     snapshot.layer.anchorPoint = view.layer.anchorPoint
     snapshot.layer.position = containerView.convert(view.layer.position, from: view.superview!)
@@ -393,5 +408,13 @@ extension HeroContext {
 
 /// Allows a view to create their own custom snapshot when using **Optimized** snapshot
 public protocol HeroCustomSnapshotView {
-	var heroSnapshot: UIView? { get }
+  var heroSnapshot: UIView? { get }
+}
+
+// BestPartners: Modify By BestPartners 新增了一个协议，用于非UIImageView的图片容器来实现
+public protocol HeroCustomImageViewProtocal {
+    var heroCustomImageViewEnabled: Bool { get }
+    var heroCustomImageViewImage: UIImage? { get }
+    var heroCustomImageViewTintColor: UIColor { get }
+    var heroCustomImageViewContentMode: UIView.ContentMode { get }
 }

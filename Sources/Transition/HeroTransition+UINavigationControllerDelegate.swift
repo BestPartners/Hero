@@ -46,6 +46,12 @@ extension HeroTransition: UINavigationControllerDelegate {
   }
 
   public func navigationController(_ navigationController: UINavigationController, interactionControllerFor animationController: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
-    return interactiveTransitioning
-  }
+    // BestPartners: Modify By BestPartners. IM 界面退出不能用Hero，有键盘无法消失的问题，IM那边通过基类实现HeroTransitionNavigationIgnoreable协议来控制逻辑
+    guard let _fvc = fromViewController, _fvc is HeroTransitionNavigationIgnoreable else { return interactiveTransitioning }
+    return nil
+    }
 }
+
+
+// BestPartners: Modify By BestPartners，这里声明一个协议，用于标记上述方法忽略Hero部分逻辑
+public protocol HeroTransitionNavigationIgnoreable {}

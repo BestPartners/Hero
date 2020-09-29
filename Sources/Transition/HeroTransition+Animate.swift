@@ -24,7 +24,11 @@ import Foundation
 
 extension HeroTransition {
   open func animate() {
-    guard state == .starting else { return }
+    guard state == .starting else { // BestPartners: Modify By BestPartners
+        print("[HeroTransition]--state Error \(state)")
+        fullScreenSnapshot?.removeFromSuperview()
+        return
+    }
     state = .animating
 
     if let toView = toView {
